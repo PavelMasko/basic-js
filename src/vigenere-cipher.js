@@ -20,43 +20,101 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-    encrypt() {
-        throw new NotImplementedError('Not implemented');
-        // remove line with error and write your code here
+
+    constructor(option = true) {
+        this.option = option;
     }
-    decrypt() {
-        throw new NotImplementedError('Not implemented');
-        // remove line with error and write your code here
+
+    encrypt(str, key) {
+        if (!str || !key) {
+            throw new Error('Incorrect arguments!');
+        }
+
+        const result = [],
+            spaceIndex = [],
+            alphabetLength = 26,
+            maxCharCode = 90,
+            minCharCode = 65,
+            startCharCode = 'A'.charCodeAt(0),
+            keyLength = Math.ceil(str.length / key.length);
+
+        for (let i = 0; i < str.length; i++) {
+            if (str[i] == ' ') spaceIndex.push([i])
+        }
+
+        key = key.repeat(keyLength).toUpperCase().slice(0, str.length);
+        str = str.toUpperCase().split(' ').join('');
+
+
+        for (let i = 0; i < key.length; i++) {
+            if (str.charCodeAt(i) >= minCharCode && str.charCodeAt(i) <= maxCharCode) {
+                const keyIndex = key.charCodeAt(i) - startCharCode;
+                const strIndex = str.charCodeAt(i) - startCharCode;
+                result.push(String.fromCharCode(startCharCode + (keyIndex + strIndex) % alphabetLength));
+            } else {
+                result.push(str[i]);
+            }
+        }
+
+        spaceIndex.map(elem => {
+            result.splice(elem, 0, ' ')
+        });
+
+        if (this.option == true) {
+            return result.join('')
+        } else {
+            return result.reverse().join('');
+        }
+    }
+
+
+
+    decrypt(str, key) {
+        if (!str || !key) {
+            throw new Error('Incorrect arguments!');
+        }
+
+        const result = [],
+            spaceIndex = [],
+            alphabetLength = 26,
+            maxCharCode = 90,
+            minCharCode = 65,
+            startCharCode = 'A'.charCodeAt(0),
+            keyLength = Math.ceil(str.length / key.length);
+
+        for (let i = 0; i < str.length; i++) {
+            if (str[i] == ' ') spaceIndex.push([i])
+        }
+
+        key = key.repeat(keyLength).toUpperCase().slice(0, str.length);
+        str = str.toUpperCase().split(' ').join('');
+
+
+        for (let i = 0; i < key.length; i++) {
+            if (str.charCodeAt(i) >= minCharCode && str.charCodeAt(i) <= maxCharCode) {
+                const keyIdx = key.charCodeAt(i) - startCharCode;
+                const messageIdx = str.charCodeAt(i) - startCharCode;
+                result.push(String.fromCharCode(startCharCode + (messageIdx - keyIdx + alphabetLength) % alphabetLength));
+            } else {
+                result.push(str[i]);
+            }
+        }
+
+        spaceIndex.map(elem => {
+            result.splice(elem, 0, ' ')
+        });
+
+        if (this.option == true) {
+            return result.join('')
+        } else {
+            return result.reverse().join('');
+        }
     }
 }
-// class VigenereCipheringMachine {
-//   encrypt(text, key) {
-//       let kf = Math.ceil(text.length / key.length);
-//       key = key.repeat(kf);
 
-//       let codeA = 'A'.charCodeAt(0);
-//       let abcCount = 26;
-//       console.log(codeA);
-//       let result = [];
 
-//       for (let i = 0; i < text.length; i++) {
-//           if (text[i] === ' ') {
-//               result.push(text[i]);
-//           } else {
-//               let letterIdx = text.charCodeAt(i) - codeA;
-//               let shift = key.charCodeAt(i) - codeA;
 
-//               result.push(
-//                   String.fromCharCode(codeA + (letterIdx + shift) % abcCount)
-//               );
-//           }
-//       }
 
-//       return result.join('');
-//   }
-// }
-
-// console.log(VigenereCipheringMachine.prototype.encrypt('Samelengthkey', 'Samelengthkey'));
 module.exports = {
     VigenereCipheringMachine
 };
